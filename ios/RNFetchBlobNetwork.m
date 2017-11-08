@@ -106,8 +106,12 @@ NSOperationQueue *taskQueue;
 - (id)init {
     self = [super init];
     if(taskQueue == nil) {
-        taskQueue = [[NSOperationQueue alloc] init];
-        taskQueue.maxConcurrentOperationCount = 10;
+        @synchronized ([RNFetchBlobNetwork class]) {
+            if (taskQueue == nil) {
+                taskQueue = [[NSOperationQueue alloc] init];
+                taskQueue.maxConcurrentOperationCount = 10;
+            }
+        }
     }
     return self;
 }
@@ -245,8 +249,11 @@ NSOperationQueue *taskQueue;
     [task resume];
 
     // network status indicator
-    if([[options objectForKey:CONFIG_INDICATOR] boolValue] == YES)
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    if ([[options objectForKey:CONFIG_INDICATOR] boolValue] == YES) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+        });
+    }
     __block UIApplication * app = [UIApplication sharedApplication];
 
 }
@@ -483,7 +490,9 @@ NSOperationQueue *taskQueue;
     NSString * respStr = [NSNull null];
     NSString * rnfbRespType = @"";
 
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    });
 
     if(respInfo == nil)
     {
