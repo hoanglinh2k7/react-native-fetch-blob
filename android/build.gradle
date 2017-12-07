@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
+    compile 'com.facebook.react:react-native:0.48.4'
     //compile 'com.squareup.okhttp3:okhttp:+'
     //{RNFetchBlob_PRE_0.28_DEPDENDENCY}
 }
